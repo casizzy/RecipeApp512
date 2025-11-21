@@ -2,26 +2,14 @@ package com.pjasoft.recipeapp.ui.Screens.Auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,25 +22,21 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.pjasoft.recipeapp.domain.utils.Preferences
-import com.pjasoft.recipeapp.ui.RecipeTheme
+import com.pjasoft.recipeapp.ui.Components.LoadingOverlay
 import com.pjasoft.recipeapp.ui.Screens.HomeScreenRoute
 import com.pjasoft.recipeapp.ui.Screens.LoginScreenRoute
-import com.pjasoft.recipeapp.ui.Screens.MainScreenRoute
 import com.pjasoft.recipeapp.ui.Screens.RegisterScreenRoute
 import com.pjasoft.recipeapp.ui.viewModels.AuthViewModel
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.reflect.KClass
 
 @Composable
 fun LoginScreen(
     navController: NavController
 ){
-    var isLogged by remember {
-        mutableStateOf(false)
-    }
+    var isLogged by remember { mutableStateOf(false) }
     val colors = MaterialTheme.colorScheme
+
     val viewModel: AuthViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
@@ -60,23 +44,19 @@ fun LoginScreen(
             }
         }
     )
-    var email by remember {
-        mutableStateOf("")
-    }
-    var password by remember {
-        mutableStateOf("")
-    }
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
     isLogged = Preferences.getIsLogged()
 
-    LaunchedEffect(isLogged){
-        if(isLogged){
-            navController.navigate(HomeScreenRoute){
-                popUpTo(LoginScreenRoute){inclusive = true}
+    LaunchedEffect(isLogged) {
+        if (isLogged) {
+            navController.navigate(HomeScreenRoute) {
+                popUpTo(LoginScreenRoute) { inclusive = true }
             }
         }
     }
-
 
     Box(
         modifier = Modifier
@@ -84,10 +64,8 @@ fun LoginScreen(
             .background(colors.background)
     ){
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-        )
-        {
+            modifier = Modifier.fillMaxSize()
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -95,11 +73,7 @@ fun LoginScreen(
                     .clip(RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp))
                     .background(colors.primary)
             )
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(2f)
-            )
+            Spacer(modifier = Modifier.weight(2f))
         }
 
         Column(
@@ -108,77 +82,63 @@ fun LoginScreen(
                 .align(Alignment.Center)
                 .height(350.dp)
                 .padding(horizontal = 24.dp)
-                .shadow(10.dp,RoundedCornerShape(20.dp))
+                .shadow(10.dp, RoundedCornerShape(20.dp))
                 .clip(RoundedCornerShape(20.dp))
                 .background(colors.surface)
                 .padding(vertical = 10.dp, horizontal = 10.dp),
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "Bienvenido"
-            )
+            Text(text = "Bienvenido")
+
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 value = email,
                 shape = CircleShape,
-                onValueChange = { email = it},
+                onValueChange = { email = it },
                 singleLine = true,
-                placeholder = {
-                    Text(
-                        text = "Correo Electronico"
-                    )
-                }
+                placeholder = { Text("Correo Electrónico") }
             )
+
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 value = password,
                 shape = CircleShape,
-                onValueChange = { password = it},
+                onValueChange = { password = it },
                 singleLine = true,
-                placeholder = {
-                    Text(
-                        text = "Contraseña"
-                    )
-                },
-                visualTransformation = PasswordVisualTransformation()
+                visualTransformation = PasswordVisualTransformation(),
+                placeholder = { Text("Contraseña") }
             )
+
             Button(
                 onClick = {
                     viewModel.login(
                         email = email,
                         password = password
-                    ){ result, message ->
+                    ) { result, _ ->
                         if (result) isLogged = true
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
-            ){
-                Text(
-                    text = "Iniciar Sesion"
-                )
+            ) {
+                Text("Iniciar Sesión")
             }
+
             Text(
                 text = "¿No tienes una cuenta? Crea una",
                 color = colors.primary,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .clickable{
-                        navController.navigate(RegisterScreenRoute)
-                    }
+                modifier = Modifier.clickable {
+                    navController.navigate(RegisterScreenRoute)
+                }
             )
         }
     }
-}
 
-@Preview
-@Composable
-fun LoginScreenPreview(){
-    RecipeTheme {
-        LoginScreen(
-            navController = rememberNavController()
+    if (viewModel.isLoading) {
+        LoadingOverlay(
+            colors = colors,
+            message = "Iniciando sesión…"
         )
     }
 }

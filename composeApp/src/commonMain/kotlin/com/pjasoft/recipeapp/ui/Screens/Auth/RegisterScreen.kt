@@ -1,6 +1,7 @@
 package com.pjasoft.recipeapp.ui.Screens.Auth
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,8 +35,9 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.pjasoft.recipeapp.ui.Components.LoadingOverlay
 import com.pjasoft.recipeapp.ui.RecipeTheme
-import com.pjasoft.recipeapp.ui.Screens.MainScreenRoute
+import com.pjasoft.recipeapp.ui.Screens.LoginScreenRoute
 import com.pjasoft.recipeapp.ui.Screens.RegisterScreenRoute
 import com.pjasoft.recipeapp.ui.viewModels.AuthViewModel
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -51,18 +53,11 @@ fun RegisterScreen(navController: NavController){
             }
         }
     )
-    var name by remember {
-        mutableStateOf("")
-    }
-    var email by remember {
-        mutableStateOf("")
-    }
-    var password by remember {
-        mutableStateOf("")
-    }
-    var confirmPassword by remember {
-        mutableStateOf("")
-    }
+
+    var name by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -71,8 +66,7 @@ fun RegisterScreen(navController: NavController){
     ){
         Column(
             modifier = Modifier.fillMaxSize()
-        )
-        {
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -84,6 +78,7 @@ fun RegisterScreen(navController: NavController){
                 modifier = Modifier.weight(2f)
             )
         }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -103,60 +98,45 @@ fun RegisterScreen(navController: NavController){
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp
             )
+
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 value = name,
                 shape = CircleShape,
-                onValueChange = { name = it},
+                onValueChange = { name = it },
                 singleLine = true,
-                placeholder = {
-                    Text(
-                        text = "Nombre"
-                    )
-                }
+                placeholder = { Text("Nombre") }
             )
+
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 value = email,
                 shape = CircleShape,
                 onValueChange = { email = it },
                 singleLine = true,
-                placeholder = {
-                    Text(
-                        text = "Correo Electronico"
-                    )
-                }
+                placeholder = { Text("Correo Electrónico") }
             )
+
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 value = password,
                 shape = CircleShape,
                 onValueChange = { password = it },
                 singleLine = true,
-                placeholder = {
-                    Text(
-                        text = "Contraseña"
-                    )
-                },
+                placeholder = { Text("Contraseña") },
                 visualTransformation = PasswordVisualTransformation()
             )
+
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 value = confirmPassword,
                 shape = CircleShape,
                 onValueChange = { confirmPassword = it },
                 singleLine = true,
-                placeholder = {
-                    Text(
-                        text = "Confirmar contraseña"
-                    )
-                },
+                placeholder = { Text("Confirmar contraseña") },
                 visualTransformation = PasswordVisualTransformation()
             )
+
             Button(
                 onClick = {
                     if (
@@ -164,7 +144,7 @@ fun RegisterScreen(navController: NavController){
                         email.isBlank() ||
                         password.isBlank() ||
                         confirmPassword.isBlank()
-                        ){
+                    ){
                         return@Button
                     }
 
@@ -178,24 +158,37 @@ fun RegisterScreen(navController: NavController){
                         password = password
                     ){ result, message ->
                         if (result){
-                            navController.navigate(MainScreenRoute){
+                            navController.navigate(LoginScreenRoute){
                                 popUpTo(RegisterScreenRoute) {
                                     inclusive = true
                                 }
                             }
-
-                        }else{
-                            print(message)
+                        } else {
+                            println(message)
                         }
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
             ){
-                Text(
-                    text = "Registrarse"
-                )
+                Text(text = "Registrarse")
             }
+
+            Text(
+                text = "¿Ya tienes una cuenta? Inicia sesión",
+                color = colors.primary,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable {
+                    navController.popBackStack()
+                }
+            )
         }
+    }
+
+    if (viewModel.isLoading) {
+        LoadingOverlay(
+            colors = colors,
+            message = "Creando cuenta…"
+        )
     }
 }
 

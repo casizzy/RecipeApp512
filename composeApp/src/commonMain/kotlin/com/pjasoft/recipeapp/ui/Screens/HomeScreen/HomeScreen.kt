@@ -356,7 +356,7 @@ fun HomeScreen(navController: NavController){
     }
 
     if (viewModel.isLoading){
-        LoadingOverlay(colors)
+        LoadingOverlay(colors, "Cocinando…")
     }
 
 }

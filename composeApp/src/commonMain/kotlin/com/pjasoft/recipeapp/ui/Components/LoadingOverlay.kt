@@ -17,7 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LoadingOverlay(colors: ColorScheme){
+fun LoadingOverlay(
+    colors: ColorScheme,
+    message: String
+){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -31,7 +34,7 @@ fun LoadingOverlay(colors: ColorScheme){
             modifier = Modifier.size(70.dp)
         )
         Text(
-            text = "Cocinando",
+            text = message,
             style = MaterialTheme.typography.titleLarge,
             color = colors.onSurface
         )
