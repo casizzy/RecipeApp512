@@ -24,12 +24,15 @@ class RecipeViewModel : ViewModel() {
     var showSheet by mutableStateOf(false)
     var isLoading by mutableStateOf(false)
 
+    var isFromHistory by mutableStateOf(false)
+
     init {
         getRecipes()
     }
 
     fun showModalFromList(recipe : RecipeDTO){
         generatedRecipe = recipe
+        isFromHistory = true
         showSheet = true
     }
 
@@ -42,6 +45,7 @@ class RecipeViewModel : ViewModel() {
             try {
                 isLoading = true
                 val result = recipeService.generateRecipe(prompt)
+                isFromHistory = false
                 showSheet = true
                 generatedRecipe = result
                 println(result.toString())
@@ -85,6 +89,7 @@ class RecipeViewModel : ViewModel() {
                 )
                 val result = recipeService.saveGeneratedRecipe(recipe = recipe)
                 print(result.toString())
+                getRecipes()
             }catch (e: Exception){
                 println(e.toString())
             }

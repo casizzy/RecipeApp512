@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -21,6 +20,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,12 +32,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.pjasoft.recipeapp.domain.dtos.RecipeDTO
-import com.pjasoft.recipeapp.domain.models.Recipe
 import com.pjasoft.recipeapp.ui.RecipeTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
 @Composable
-fun GeneratedRecipe(recipe: RecipeDTO?, onSave: () -> Unit){
+fun GeneratedRecipe(
+    recipe: RecipeDTO?,
+    isFromHistory: Boolean,
+    onSave: () -> Unit,
+    onClose: () -> Unit
+) {
     val colors = MaterialTheme.colorScheme
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -54,9 +60,16 @@ fun GeneratedRecipe(recipe: RecipeDTO?, onSave: () -> Unit){
                 .background(colors.primary.copy(0.1f)),
             contentScale = ContentScale.Crop
         )
+
+        Spacer(Modifier.height(8.dp))
+
         Text(
-            text = recipe?.title ?: ""
+            text = recipe?.title ?: "",
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
+
         Row(
             modifier = Modifier
                 .clip(RoundedCornerShape(50))
@@ -82,23 +95,37 @@ fun GeneratedRecipe(recipe: RecipeDTO?, onSave: () -> Unit){
                 fontWeight = FontWeight.SemiBold
             )
         }
+
+        Spacer(Modifier.height(16.dp))
+
         Text(
-            text = "Ingredientes"
+            text = "Ingredientes",
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 18.sp
         )
+
+        Spacer(Modifier.height(8.dp))
+
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
-        ){
+        ) {
             recipe?.ingredients?.forEach { ingredient ->
-                Tag(
-                    text = ingredient
-                )
+                Tag(text = ingredient)
             }
         }
+
+        Spacer(Modifier.height(16.dp))
+
         Text(
-            text = "Preparacion"
+            text = "Preparación",
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 18.sp
         )
+
+        Spacer(Modifier.height(8.dp))
+
         recipe?.instructions?.forEachIndexed { index, instruction ->
             Row(
                 modifier = Modifier
@@ -107,7 +134,7 @@ fun GeneratedRecipe(recipe: RecipeDTO?, onSave: () -> Unit){
                 verticalAlignment = Alignment.Top
             ) {
                 Text(
-                    text = "${ index + 1 }. ",
+                    text = "${index + 1}. ",
                     color = colors.primary,
                     fontWeight = FontWeight.Bold
                 )
@@ -117,16 +144,35 @@ fun GeneratedRecipe(recipe: RecipeDTO?, onSave: () -> Unit){
                 )
             }
         }
-        Button(
-            onClick = onSave
-        ){
-            Text("Guardar")
+
+        Spacer(Modifier.height(24.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedButton(
+                modifier = Modifier.weight(1f),
+                onClick = onClose
+            ) {
+                Text("Cerrar")
+            }
+
+            if (!isFromHistory) {
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = onSave
+                ) {
+                    Text("Guardar")
+                }
+            }
         }
     }
 }
+
 @Preview
 @Composable
-fun GeneratedRecipeView(){
+fun GeneratedRecipeView() {
     val recipe = RecipeDTO(
         category = "Mexicana",
         imageUrl = "https://images.unsplash.com/photo-1613585435238-5577aa11505f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4MTg0MDZ8MHwxfHNlYXJjaHw4fHxUb3N0YWRhc3xlbnwwfHx8fDE3NjA5MTU5NzF8MA&ixlib=rb-4.1.0&q=80&w=1080",
@@ -164,7 +210,9 @@ fun GeneratedRecipeView(){
     RecipeTheme {
         GeneratedRecipe(
             recipe = recipe,
-            {}
+            isFromHistory = false,
+            onSave = {},
+            onClose = {}
         )
     }
 }

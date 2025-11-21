@@ -39,7 +39,7 @@ fun Header(onLoguot: () -> Unit){
                 fontWeight = FontWeight.Light
             )
             Text(
-                text = "Tu nombre",
+                text = "Stella",
                 fontWeight = FontWeight.Bold
             )
         }// fin del column

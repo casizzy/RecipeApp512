@@ -336,14 +336,22 @@ fun HomeScreen(navController: NavController){
             )
             GeneratedRecipe(
                 recipe = viewModel.generatedRecipe,
+                isFromHistory = viewModel.isFromHistory,
                 onSave = {
                     scope.launch {
                         viewModel.hideModal()
                         sheetState.hide()
                     }
                     viewModel.saveRecipeInDb()
+                },
+                onClose = {
+                    scope.launch {
+                        viewModel.hideModal()
+                        sheetState.hide()
+                    }
                 }
             )
+
         }
     }
 
